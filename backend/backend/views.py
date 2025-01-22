@@ -3,7 +3,16 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from RoomApp.models import *
-
+@api_view(['POST'])
+def register_room(self):
+    try:
+        floor = input("enter floor")
+        type = input("enter type")
+        Room.objects.create(floor = floor,type=type,available=True)
+        return Response(data="success")
+    except Exception as e:
+        return Response(data="fail")
+ 
 @api_view(['GET'])
 def register_user_and_make_booking(self):
     email = input("Enter email: ")

@@ -2,12 +2,10 @@ from django.db import models
 
 # Create your models here.
 class Room(models.Model):
-    def __init__(self, room_id, floor, room_type, available):
-        self.room_id = room_id
+    def __init__(self,floor, room_type, available):
         self.floor = floor
         self.room_type = room_type
         self.available = available
-    room_id = models.IntegerField()
     image = models.TextField(blank=True, null=True)
     floor = models.IntegerField()
     type = models.IntegerField() 

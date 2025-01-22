@@ -1,10 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import register_user_and_make_booking
+from .views import register_user_and_make_booking, register_rooms
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
-
 # Configure the schema view for Swagger and Redoc
 schema_view = get_schema_view(
    openapi.Info(
@@ -24,4 +23,5 @@ urlpatterns = [
     path("register_booking/", register_user_and_make_booking, name="register_user_and_make_booking"),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path("register_rooms/", register_rooms, name="register_rooms"),
 ]
