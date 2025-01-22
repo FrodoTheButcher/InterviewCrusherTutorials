@@ -1,5 +1,7 @@
 from .models import *
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.contrib.auth.models import User
 
 @api_view(['GET'])
 def register_user_and_make_booking(self):
@@ -9,6 +11,10 @@ def register_user_and_make_booking(self):
     password = input("Enter password: ")
     
     user = User(email, first, last, password)
+    user.email = email 
+    user.first_name = first 
+    user.last_name = last 
+    user.password = password
     
     rooms = [
         Room(101, 1, "Single", True),
@@ -42,4 +48,5 @@ def register_user_and_make_booking(self):
     end = input("Enter end date (YYYY-MM-DD): ")
     
     booking = Booking(user, selected_room.room_id, start, end)
-    print(f"Booking successful for {booking.user.email} from {booking.start_date} to {booking.end_date} in room {booking.room.room_id}")
+    print(f"Booking successful for {booking.user.email} from {booking.start_date} to {booking.end_date} in room {room_id}")
+    return Response(data="success")
