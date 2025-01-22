@@ -17,3 +17,5 @@ steps:run migrations and explain tables and move models to separate app
 ___________________________________________________________________________
 6.Add the rooms in the db with an api
 ___________________________________________________________________________
+7.Query the rooms in the main api 
+___________________________________________________________________________

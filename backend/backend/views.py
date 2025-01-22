@@ -26,18 +26,7 @@ def register_user_and_make_booking(self):
     user.last_name = last 
     user.password = password
     
-    rooms = [
-        Room(101, 1, "Single", True),
-        Room(102, 1, "Double", True),
-        Room(103, 1, "Suite", False),
-        Room(104, 2, "Single", True),
-        Room(105, 2, "Double", False),
-        Room(201, 2, "Suite", True),
-        Room(202, 3, "Single", True),
-        Room(203, 3, "Double", True),
-        Room(204, 3, "Suite", True),
-        Room(205, 4, "Single", False)
-    ]
+    rooms = Room.objects.all()
     
     print("Available Rooms:")
     for room in rooms:
