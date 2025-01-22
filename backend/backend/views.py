@@ -2,6 +2,7 @@ from .models import *
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.models import User
+from RoomApp.models import *
 
 @api_view(['GET'])
 def register_user_and_make_booking(self):
