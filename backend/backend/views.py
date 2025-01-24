@@ -1,30 +1,41 @@
 from .models import *
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view , APIView
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from RoomApp.models import *
-@api_view(['POST'])
-def register_room(self):
-    try:
-        floor = input("enter floor")
-        type = input("enter type")
-        Room.objects.create(floor = floor,type=type,available=True)
-        return Response(data="success")
-    except Exception as e:
-        return Response(data="fail")
+from .requests import CreateUserRequest , CreateRoomRequest
+from drf_yasg.utils import swagger_auto_schema
+class RegisterRoomView(APIView):
+    @swagger_auto_schema(request_body=CreateRoomRequest)
+    def post(self,request):
+        try:
+            floor = input("enter floor")
+            type = input("enter type")
+            Room.objects.create(floor = floor,type=type,available=True)
+            return Response(data="success")
+        except Exception as e:
+            return Response(data="fail")
+    
+class RegisterUserView(APIView):
+    @swagger_auto_schema(request_body=CreateUserRequest)
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        first_name = request.data.get('first_name')
+        last_name = request.data.get('last_name')
+        password = request.data.get('password')
+
+        user = User.objects.create(
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            password=password
+        )
+        return Response({"data": "Success", "user_id": user.id})
  
 @api_view(['GET'])
 def register_user_and_make_booking(self):
-    email = input("Enter email: ")
-    first = input("Enter first name: ")
-    last = input("Enter last name: ")
-    password = input("Enter password: ")
-    
-    user = User.objects.create(email=email,first_name=first,last_name=last,password=password)
-    user.email = email 
-    user.first_name = first 
-    user.last_name = last 
-    user.password = password
+    email = input("enter user email")
+    user = User.objects.get(email=email)
     rooms = Room.objects.all()
     
     print("Available Rooms:")
