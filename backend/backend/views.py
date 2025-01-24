@@ -20,18 +20,17 @@ def register_user_and_make_booking(self):
     last = input("Enter last name: ")
     password = input("Enter password: ")
     
-    user = User(email, first, last, password)
+    user = User.objects.create(email=email,first_name=first,last_name=last,password=password)
     user.email = email 
     user.first_name = first 
     user.last_name = last 
     user.password = password
-    
     rooms = Room.objects.all()
     
     print("Available Rooms:")
     for room in rooms:
         if room.available:
-            print(f"Room ID {room.room_id}, Floor {room.floor}, Type {room.room_type}")
+            print(f"Room ID {room.id}, Floor {room.floor}, Type {room.room_type}")
     
     room_id = int(input("Choose a room by Room ID: "))
     selected_room = None
@@ -46,6 +45,7 @@ def register_user_and_make_booking(self):
     start = input("Enter start date (YYYY-MM-DD): ")
     end = input("Enter end date (YYYY-MM-DD): ")
     
-    booking = Booking(user, selected_room.room_id, start, end)
+    booking = Booking(user, selected_room.id, start, end)
+    Booking.objects.create(room = selected_room.id, start_date = start,end_Date = end,user = 1)
     print(f"Booking successful for {booking.user.email} from {booking.start_date} to {booking.end_date} in room {room_id}")
     return Response(data="success")
