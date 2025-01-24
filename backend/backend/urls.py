@@ -23,6 +23,6 @@ urlpatterns = [
     path("register_booking/", RegisterUserAndMakeBookingView.as_view(), name="register_user_and_make_booking"),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-    path("register_rooms/", RegisterRoomView.as_view(), name="register_rooms"),
+    path("register_room/", RegisterRoomView.as_view(), name="register_room"),
     path("register_user/",RegisterUserView.as_view(),name="register_user",)
 ]
