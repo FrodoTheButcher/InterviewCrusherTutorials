@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import register_user_and_make_booking, RegisterRoomView , RegisterUserView
+from .views import RegisterUserAndMakeBookingView, RegisterRoomView , RegisterUserView
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
@@ -20,7 +20,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("register_booking/", register_user_and_make_booking, name="register_user_and_make_booking"),
+    path("register_booking/", RegisterUserAndMakeBookingView.as_view(), name="register_user_and_make_booking"),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path("register_rooms/", RegisterRoomView.as_view(), name="register_rooms"),
