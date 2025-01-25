@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import RegisterBookingView, RegisterRoomView , RegisterUserView
+from UsersApp.views import RegisterBookingView , RegisterUserView
+from RoomApp.views import RegisterRoomView
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions

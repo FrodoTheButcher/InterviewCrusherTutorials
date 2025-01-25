@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_yasg",
     "RoomApp.apps.RoomappConfig",
+    "UsersApp.apps.UsersappConfig",
 ]
 
 MIDDLEWARE = [
