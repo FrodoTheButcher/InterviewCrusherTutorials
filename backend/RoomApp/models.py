@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 # Create your models here.
 class Room(models.Model):
     image = models.TextField(blank=True, null=True)
@@ -8,6 +8,7 @@ class Room(models.Model):
     available = models.BooleanField(default=False)
 
 class Booking(models.Model):
-    room = models.IntegerField()
+    room = models.ForeignKey(Room,on_delete=models.CASCADE,default=1)
     start_date = models.DateField()
     end_date = models.DateField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)

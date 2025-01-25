@@ -33,7 +33,7 @@ class RegisterUserView(APIView):
 
         return Response({"message": "User registered successfully", "user_id": user.id}, status=status.HTTP_201_CREATED)
 
-class RegisterUserAndMakeBookingView(APIView):
+class RegisterBookingView(APIView):
     @swagger_auto_schema(request_body=RegisterUserAndMakeBookingRequest)
     def post(self, request):
         email = request.data.get('email')
