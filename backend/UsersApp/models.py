@@ -18,3 +18,4 @@ class Booking(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    cost = models.FloatField(null=False,blank=False,default=0.0)

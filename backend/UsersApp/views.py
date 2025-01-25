@@ -30,6 +30,17 @@ class RegisterUserView(APIView):
 
 
 class RegisterBookingView(APIView):
+    DAILY_RATES = {
+        'STANDARD': 100,
+        'DELUXE': 150,
+        'SUITE': 200,
+        'FAMILY': 180,
+    }
+    def get_cost(self, total_days, room_type):
+        rate = self.DAILY_RATES.get(room_type, 0)
+        return total_days * rate
+        
+    
     @swagger_auto_schema(request_body=BookingRequest)
     def post(self, request):
         email = request.data.get('email')
@@ -45,7 +56,11 @@ class RegisterBookingView(APIView):
 
         start = request.data.get('start_date')
         end = request.data.get('end_date')
-
+        
+        total_days = (end - start).days
+        if total_days < 1:
+            return Response("Invalid dates.", status=status.HTTP_400_BAD_REQUEST)
+        
         booking = Booking.objects.create(
                 room=selected_room,
                 start_date=start,
