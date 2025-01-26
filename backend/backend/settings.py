@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "drf_yasg",
+    "corsheaders",
     "RoomApp.apps.RoomappConfig",
     "UsersApp.apps.UsersappConfig",
 ]
@@ -52,6 +53,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+        'corsheaders.middleware.CorsMiddleware',
 ]
 
 REST_FRAMEWORK = {
@@ -147,3 +149,5 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
 PASSWORD_RESET_TIMEOUT = 14400
+
+CORS_ALLOW_ALL_ORIGINS = True

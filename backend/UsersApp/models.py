@@ -8,6 +8,7 @@ class Profile(models.Model):
         ('HOUSEKEEPER', 'Housekeeper'),
         ('MANAGER', 'Manager'),
         ('RECEPTIONIST', 'Receptionist'),
+        ('DEVELOPER','Developer'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
     image = models.ImageField(upload_to='images/',blank=True, null=True)
