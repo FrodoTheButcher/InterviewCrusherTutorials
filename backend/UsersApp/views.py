@@ -1,13 +1,15 @@
 
 # Create your views here.
 from django.contrib.auth.models import User
-from rest_framework.views import APIView
+from rest_framework.decorators import APIView , api_view
 from rest_framework.response import Response
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from .requests import CreateUserRequest , BookingRequest
 from .models import Booking, Profile
 from RoomApp.models import Room
+from datetime import datetime
+from .serializers import BookingSerializer , UserSerializer
 class RegisterUserView(APIView):
     @swagger_auto_schema(request_body=CreateUserRequest)
     def post(self, request):
@@ -15,21 +17,24 @@ class RegisterUserView(APIView):
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
         password = request.data.get('password')
+        username = request.data.get("username")
 
         user = User(
             email=email,
             first_name=first_name,
-            last_name=last_name
+            last_name=last_name,
+            username=username
         )
         user.set_password(password)
         user.save()
+        Profile.objects.create(user=user,role=request.data.get("role"))
 
         return Response({"message": "User registered successfully", "user_id": user.id}, status=status.HTTP_201_CREATED)
 
-
-
-from datetime import datetime
-
+    def get(self,request):
+        users = User.objects.all()
+        users_serialized = UserSerializer(users,many=True).data 
+        return Response(users_serialized,status=status.HTTP_200_OK)
 class RegisterBookingView(APIView):
     DAILY_RATES = {
         'STANDARD': 100,
@@ -61,7 +66,7 @@ class RegisterBookingView(APIView):
         
         # Convert the start and end date strings to date objects
         start_date = datetime.strptime(start, '%Y-%m-%d').date() if start else None
-        end_date = datetime.strptime(end, '%Y-%m-%d').date() if end else None
+        end_date = datetime.strptime(end, '%Y-%m-%d').date() if end else None       
         
         total_days = (end_date - start_date).days
         if total_days < 1:
@@ -114,4 +119,25 @@ class CheckBooking(APIView):
         return Response({
             "message":"Booking deleted",
         },status=status.HTTP_200_OK)
-    
+
+
+
+@api_view(['GET'])
+def query_bookings(request,profile_id):        
+        profile = Profile.objects.get(id=profile_id)
+        if profile.role != "RECEPTIONIST":
+            return Response({"Unauthorized"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        pending_bookings = Booking.objects.filter(status="PENDING")
+        approved_bookings = Booking.objects.filter(status="APPROVED")
+        rejected_bookings = Booking.objects.filter(status="REJECTED")
+
+        pending_serialized_bookings = BookingSerializer(pending_bookings,many=True).data
+        approved_serialized_bookings = BookingSerializer(approved_bookings,many=True).data
+        rejected_serialized_bookings = BookingSerializer(rejected_bookings,many=True).data
+        bookings = {
+            "rejecteds":rejected_serialized_bookings,
+            "approveds":approved_serialized_bookings,
+            "pendings":pending_serialized_bookings
+        }
+        return Response(bookings,status=status.HTTP_200_OK)    

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from UsersApp.views import RegisterBookingView , RegisterUserView
+from UsersApp.views import RegisterBookingView , RegisterUserView , query_bookings
 from RoomApp.views import RegisterRoomView
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -28,4 +28,5 @@ urlpatterns = [
     path("register_room/", RegisterRoomView.as_view(), name="register_room"),
     path("register_user/",RegisterUserView.as_view(),name="register_user",),
     path('check_booking/<int:booking_id>/<int:profile_id>/', CheckBooking.as_view(), name='check_booking'),
+    path("query_bookings/<int:profile_id>/",query_bookings,name="query_bookings"),
 ]
