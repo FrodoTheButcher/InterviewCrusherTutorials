@@ -1,1 +1,56 @@
-# InterviewCrusherTutorials
+___________________________________________________________________________
+1.Define the first flow of the app.
+A user creates an account,logs in , searches for a free room , creates a booking  
+___________________________________________________________________________
+2.Define the first flow of the app with an api.
+A user creates an account,logs in , searches for a free room , creates a booking  
+___________________________________________________________________________
+3.Define swagger
+___________________________________________________________________________
+4.Change the user to the built in User 
+___________________________________________________________________________
+5.initialize database 
+steps:run migrations and explain tables and move models to separate app 
+___________________________________________________________________________
+6.Add the rooms in the db with an api
+___________________________________________________________________________
+7.Query the rooms in the main api 
+___________________________________________________________________________
+8.Register the user and booking in the db 
+___________________________________________________________________________
+9.Separate the creation of user in another api and query it in the booking 
+___________________________________________________________________________
+10.Get the data with the requests + homework for the room one  
+___________________________________________________________________________
+12.Explain homework 
+___________________________________________________________________________
+11.Convert everything to class based views
+___________________________________________________________________________
+12.Make the bookin a post with a request too 
+___________________________________________________________________________
+13.Exception handling and security
+___________________________________________________________________________
+14.Testing for create room 
+___________________________________________________________________________
+15.Testing the creation of user 
+___________________________________________________________________________
+16.Refacor to ApiTestCase
+___________________________________________________________________________
+17.Testing the creation of booking  and make relation between user and booking 
+___________________________________________________________________________
+18.Move the views and tests in specific apps
+___________________________________________________________________________
+19.Extend user with user profile and modify the room to have choices
+___________________________________________________________________________
+20.Calculate the cost
+___________________________________________________________________________
+21.Accept/Rejected the booking + fix the tests
+___________________________________________________________________________
+22.Query all the pending booking + homework for other statuses  + manually test the api and create the get functions
+___________________________________________________________________________
+23.Send emails
+___________________________________________________________________________
+24.Add dummy data 
+___________________________________________________________________________
+25.Frontend initialization
+___________________________________________________________________________
