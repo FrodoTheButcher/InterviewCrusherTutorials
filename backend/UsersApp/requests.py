@@ -7,7 +7,7 @@ class CreateUserRequest(serializers.Serializer):
     last_name = serializers.CharField()
     password = serializers.CharField()
     username = serializers.CharField()
-    image = serializers.CharField()
+    image = serializers.ImageField()
     role = serializers.ChoiceField(choices = Profile.ROLE_CHOICES)
     
 class BookingRequest(serializers.Serializer):

@@ -6,6 +6,8 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
 from UsersApp.views import CheckBooking
+from django.conf import settings
+from django.conf.urls.static import static
 # Configure the schema view for Swagger and Redoc
 schema_view = get_schema_view(
    openapi.Info(
@@ -29,4 +31,4 @@ urlpatterns = [
     path("register_user/",RegisterUserView.as_view(),name="register_user",),
     path('check_booking/<int:booking_id>/<int:profile_id>/', CheckBooking.as_view(), name='check_booking'),
     path("query_bookings/<int:profile_id>/",query_bookings,name="query_bookings"),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

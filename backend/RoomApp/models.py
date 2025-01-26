@@ -8,7 +8,7 @@ class Room(models.Model):
         ('SUITE', 'Suite'),
         ('FAMILY', 'Family Room'),
     ]
-    image = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='images/',blank=True, null=True)
     floor = models.IntegerField()
     type = models.CharField(max_length=50, choices=ROOM_TYPE_CHOICES) 
     available = models.BooleanField(default=False)

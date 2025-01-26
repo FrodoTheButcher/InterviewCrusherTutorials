@@ -10,7 +10,7 @@ class Profile(models.Model):
         ('RECEPTIONIST', 'Receptionist'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
-    image = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='images/',blank=True, null=True)
     role = models.CharField(max_length=15, choices=ROLE_CHOICES, default='USER')
 
 class Booking(models.Model):
