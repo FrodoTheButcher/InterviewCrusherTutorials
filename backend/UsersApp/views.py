@@ -10,6 +10,9 @@ from .models import Booking, Profile
 from RoomApp.models import Room
 from datetime import datetime
 from .serializers import BookingSerializer , UserSerializer
+from django.core.mail import send_mail
+from django.conf import settings
+
 class RegisterUserView(APIView):
     @swagger_auto_schema(request_body=CreateUserRequest)
     def post(self, request):
@@ -103,7 +106,9 @@ class CheckBooking(APIView):
         room = booking.room
         room.available = False
         room.save()
-        #save some approved bookings
+       
+        send_mail("Booking approved","Your booking was approved",settings.EMAIL_HOST_USER,[profile.user.email],fail_silently=False)
+       
         return Response({
             "message":"Booking saved",
         },status=status.HTTP_200_OK)
@@ -116,6 +121,7 @@ class CheckBooking(APIView):
         booking = Booking.objects.get(id=booking_id)
         booking.status = "REJECTED"
         booking.save()
+        send_mail("Booking rejected","Your booking was rejected",settings.EMAIL_HOST_USER,[profile.user.email],fail_silently=False)
         return Response({
             "message":"Booking deleted",
         },status=status.HTTP_200_OK)
