@@ -28,6 +28,7 @@ class RegisterUserView(APIView):
 
 
 
+from datetime import datetime
 
 class RegisterBookingView(APIView):
     DAILY_RATES = {
@@ -54,10 +55,15 @@ class RegisterBookingView(APIView):
         except Room.DoesNotExist:
             return Response("Room does not exist.", status=status.HTTP_404_NOT_FOUND)
 
+          # Parse the start and end dates from the request data
         start = request.data.get('start_date')
         end = request.data.get('end_date')
         
-        total_days = (end - start).days
+        # Convert the start and end date strings to date objects
+        start_date = datetime.strptime(start, '%Y-%m-%d').date() if start else None
+        end_date = datetime.strptime(end, '%Y-%m-%d').date() if end else None
+        
+        total_days = (end_date - start_date).days
         if total_days < 1:
             return Response("Invalid dates.", status=status.HTTP_400_BAD_REQUEST)
         
@@ -88,6 +94,7 @@ class CheckBooking(APIView):
         
         booking = Booking.objects.get(id=booking_id)
         booking.status = "APPROVED"
+        booking.save()
         room = booking.room
         room.available = False
         room.save()

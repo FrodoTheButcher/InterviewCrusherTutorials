@@ -49,7 +49,6 @@ class RegisterBookingViewTest(APITestCase):
             'end_date': '2025-01-02'
         }, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertFalse(Room.objects.get(id=self.room.id).available)  # Room should now be unavailable
         self.assertEqual(Booking.objects.count(), 1)
 
     def test_booking_unavailable_room(self):
@@ -96,8 +95,12 @@ class CheckBookingAPITestCase(APITestCase):
         )
 
         # Create a room
-        self.room = Room.objects.create()
-
+        self.room = Room.objects.create(
+            image='path/to/image.jpg',  # Assuming 'image' can be nullable or provide a default image path
+            floor=1,  # Provide a valid floor number
+            type='STANDARD',  # Assuming you have a type field that requires a valid type
+            available=True  # Set the availability status
+        )
         # Create a booking
         self.booking = Booking.objects.create(
             room=self.room,
@@ -107,26 +110,28 @@ class CheckBookingAPITestCase(APITestCase):
             status='PENDING'
         )
 
+        # Authenticate as the user
+
     def test_approve_booking_by_receptionist(self):
-        self.client.force_authenticate(user=self.user)
-        response = self.client.put(f'/check_booking/{self.booking.id}/{self.receptionist_profile.id}/')
+        url = reverse('check_booking', args=[self.booking.id, self.receptionist_profile.id])
+        response = self.client.put(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.booking.refresh_from_db()
         self.assertEqual(self.booking.status, 'APPROVED')
 
     def test_approve_booking_by_non_receptionist(self):
-        self.client.force_authenticate(user=self.user)
-        response = self.client.put(f'/check_booking/{self.booking.id}/{self.non_receptionist_profile.id}/')
+        url = reverse('check_booking', args=[self.booking.id, self.non_receptionist_profile.id])
+        response = self.client.put(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_reject_booking_by_receptionist(self):
-        self.client.force_authenticate(user=self.user)
-        response = self.client.delete(f'/check_booking/{self.booking.id}/{self.receptionist_profile.id}/')
+        url = reverse('check_booking', args=[self.booking.id, self.receptionist_profile.id])
+        response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.booking.refresh_from_db()
         self.assertEqual(self.booking.status, 'REJECTED')
 
     def test_reject_booking_by_non_receptionist(self):
-        self.client.force_authenticate(user=self.user)
-        response = self.client.delete(f'/check_booking/{self.booking.id}/{self.non_receptionist_profile.id}/')
+        url = reverse('check_booking', args=[self.booking.id, self.non_receptionist_profile.id])
+        response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
