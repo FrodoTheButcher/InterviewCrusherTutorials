@@ -14,8 +14,14 @@ class Profile(models.Model):
     role = models.CharField(max_length=15, choices=ROLE_CHOICES, default='USER')
 
 class Booking(models.Model):
+    CHOICES = [
+        ('PENDING','Pending'),
+        ('APPROVED','Approved'),
+        ('REJECTED','Rejected')
+    ]
     room = models.ForeignKey(Room,on_delete=models.CASCADE,default=1)
     start_date = models.DateField()
     end_date = models.DateField()
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     cost = models.FloatField(null=False,blank=False,default=0.0)
+    status = models.CharField(max_length=10, choices=CHOICES, default='PENDING')

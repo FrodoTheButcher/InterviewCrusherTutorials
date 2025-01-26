@@ -76,3 +76,57 @@ class RegisterBookingViewTest(APITestCase):
         Booking.objects.all().delete()
         Room.objects.all().delete()
         User.objects.all().delete()
+        
+        
+    
+    
+    
+    
+class CheckBookingAPITestCase(APITestCase):
+    def setUp(self):
+        # Create a user and two profiles: one for a receptionist and another for a non-receptionist
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.receptionist_profile = Profile.objects.create(
+            user=self.user,
+            role='RECEPTIONIST'
+        )
+        self.non_receptionist_profile = Profile.objects.create(
+            user=self.user,
+            role='USER'
+        )
+
+        # Create a room
+        self.room = Room.objects.create()
+
+        # Create a booking
+        self.booking = Booking.objects.create(
+            room=self.room,
+            start_date='2023-01-01',
+            end_date='2023-01-05',
+            user=self.user,
+            status='PENDING'
+        )
+
+    def test_approve_booking_by_receptionist(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.put(f'/check_booking/{self.booking.id}/{self.receptionist_profile.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.booking.refresh_from_db()
+        self.assertEqual(self.booking.status, 'APPROVED')
+
+    def test_approve_booking_by_non_receptionist(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.put(f'/check_booking/{self.booking.id}/{self.non_receptionist_profile.id}/')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_reject_booking_by_receptionist(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.delete(f'/check_booking/{self.booking.id}/{self.receptionist_profile.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.booking.refresh_from_db()
+        self.assertEqual(self.booking.status, 'REJECTED')
+
+    def test_reject_booking_by_non_receptionist(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.delete(f'/check_booking/{self.booking.id}/{self.non_receptionist_profile.id}/')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

@@ -10,6 +10,6 @@ class Room(models.Model):
     ]
     image = models.TextField(blank=True, null=True)
     floor = models.IntegerField()
-    type = models.CharField(max_length=50) 
+    type = models.CharField(max_length=50, choices=ROOM_TYPE_CHOICES) 
     available = models.BooleanField(default=False)
 

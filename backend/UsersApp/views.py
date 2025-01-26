@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from .requests import CreateUserRequest , BookingRequest
-from .models import Booking
+from .models import Booking, Profile
 from RoomApp.models import Room
 class RegisterUserView(APIView):
     @swagger_auto_schema(request_body=CreateUserRequest)
@@ -66,9 +66,8 @@ class RegisterBookingView(APIView):
                 start_date=start,
                 end_date=end,
                 user=user,
+                status = "PENDING"
             )
-        selected_room.available = False
-        selected_room.save()
 
         return Response({
             "message": "Booking successful",
@@ -79,3 +78,33 @@ class RegisterBookingView(APIView):
                 "end_date": booking.end_date
             }
         }, status=status.HTTP_201_CREATED)
+        
+        
+class CheckBooking(APIView):
+    def put(self,request,booking_id,profile_id):
+        profile = Profile.objects.get(id=profile_id)
+        if profile.role != "RECEPTIONIST":
+            return Response({"Unauthorized"},status=status.HTTP_401_UNAUTHORIZED)
+        
+        booking = Booking.objects.get(id=booking_id)
+        booking.status = "APPROVED"
+        room = booking.room
+        room.available = False
+        room.save()
+        #save some approved bookings
+        return Response({
+            "message":"Booking saved",
+        },status=status.HTTP_200_OK)
+        
+    def delete(self,request,booking_id,profile_id):
+        profile = Profile.objects.get(id=profile_id)
+        if profile.role != "RECEPTIONIST":
+            return Response({"Unauthorized"},status=status.HTTP_401_UNAUTHORIZED)
+        #send email to the user
+        booking = Booking.objects.get(id=booking_id)
+        booking.status = "REJECTED"
+        booking.save()
+        return Response({
+            "message":"Booking deleted",
+        },status=status.HTTP_200_OK)
+    
