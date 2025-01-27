@@ -1,6 +1,10 @@
 from rest_framework import serializers
-from .models import Booking, User , Profile
+from .models import Booking, User , Profile , UserRegistrationRequest
 
+class UserRegistrationRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = "__all__"
+        model = UserRegistrationRequest
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'

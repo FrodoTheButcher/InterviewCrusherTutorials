@@ -6,10 +6,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from .requests import CreateUserRequest , BookingRequest
-from .models import Booking, Profile
+from .models import Booking, Profile , UserRegistrationRequest
 from RoomApp.models import Room
 from datetime import datetime
-from .serializers import BookingSerializer , UserSerializer
+from .serializers import BookingSerializer , UserSerializer  , UserRegistrationRequestSerializer
 from django.core.mail import send_mail
 from django.conf import settings
 
@@ -22,22 +22,39 @@ class RegisterUserView(APIView):
         password = request.data.get('password')
         username = request.data.get("username")
 
-        user = User(
+        user = UserRegistrationRequest(
             email=email,
             first_name=first_name,
             last_name=last_name,
-            username=username
+            username=username,
+            password=password
         )
-        user.set_password(password)
         user.save()
-        Profile.objects.create(user=user,role=request.data.get("role"))
-
+        send_mail("Account registration in pending","Your account will be validated by the admin soon",settings.EMAIL_HOST_USER,[request.data.get('email')],fail_silently=False)
         return Response({"message": "User registered successfully", "user_id": user.id}, status=status.HTTP_201_CREATED)
 
     def get(self,request):
-        users = User.objects.all()
-        users_serialized = UserSerializer(users,many=True).data 
+        users = UserRegistrationRequest.objects.all()
+        users_serialized = UserRegistrationRequestSerializer(users,many=True).data 
         return Response(users_serialized,status=status.HTTP_200_OK)
+    
+    
+class UpdateRegistrationRequest(APIView):
+    def delete(self,request,pk):
+        UserRegistrationRequest.objects.delete(id=pk)
+        send_mail("Your registration was declined","Your registration was declined. You can contact us on ... for details",settings.EMAIL_HOST_USER,[request.data.get('email')],fail_silently=False)
+        return Response(status=status.HTTP_200_OK)
+    def post(self,request,pk):
+        user_registration = UserRegistrationRequest.objects.get(id=pk)
+        create_user  = User(
+            email=user_registration.email,
+            first_name=user_registration.first_name,
+            last_name=user_registration.last_name,
+            username=user_registration.username,
+        )
+        create_user.set_password(user_registration.password)
+        send_mail("Your registration was accepted","Your registration was accepted. Login at ...",settings.EMAIL_HOST_USER,[request.data.get('email')],fail_silently=False)
+        return Response(status=status.HTTP_200_OK)
 class RegisterBookingView(APIView):
     DAILY_RATES = {
         'STANDARD': 100,
