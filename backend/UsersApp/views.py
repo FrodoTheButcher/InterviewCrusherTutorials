@@ -20,14 +20,15 @@ class RegisterUserView(APIView):
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
         password = request.data.get('password')
-        username = request.data.get("username")
+        role = request.data.get("role")
 
         user = UserRegistrationRequest(
             email=email,
             first_name=first_name,
             last_name=last_name,
-            username=username,
-            password=password
+            username=email,
+            password=password,
+            role=role
         )
         user.save()
         send_mail("Account registration in pending","Your account will be validated by the admin soon",settings.EMAIL_HOST_USER,[request.data.get('email')],fail_silently=False)
@@ -38,10 +39,25 @@ class RegisterUserView(APIView):
         users_serialized = UserRegistrationRequestSerializer(users,many=True).data 
         return Response(users_serialized,status=status.HTTP_200_OK)
     
-    
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def get_token(cls, user):
+        token = super().get_token(user)
+        
+        profile = Profile.objects.get(user=user)
+        print("profile",profile)
+        token['role']= profile.role 
+        token['email'] = user.email
+
+        return token
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
 class UpdateRegistrationRequest(APIView):
     def delete(self,request,pk):
-        UserRegistrationRequest.objects.delete(id=pk)
+        document = UserRegistrationRequest.objects.get(id=pk)
+        document.delete()
         send_mail("Your registration was declined","Your registration was declined. You can contact us on ... for details",settings.EMAIL_HOST_USER,[request.data.get('email')],fail_silently=False)
         return Response(status=status.HTTP_200_OK)
     def post(self,request,pk):
@@ -53,8 +69,28 @@ class UpdateRegistrationRequest(APIView):
             username=user_registration.username,
         )
         create_user.set_password(user_registration.password)
+        create_user.save()
+        Profile.objects.create(
+            user = create_user,
+            image = user_registration.image,
+            role = user_registration.role
+        )
+        user_registration.delete()
         send_mail("Your registration was accepted","Your registration was accepted. Login at ...",settings.EMAIL_HOST_USER,[request.data.get('email')],fail_silently=False)
         return Response(status=status.HTTP_200_OK)
+    
+
+@api_view(['GET'])
+def get_users_registered(request):
+    users = User.objects.all()
+    serialized = UserSerializer(users,many=True).data 
+    return Response(serialized,status=status.HTTP_200_OK)    
+
+@api_view(['GET'])
+def get_all_registration_requests(request):
+        registrations = UserRegistrationRequest.objects.all()
+        serialized_Data = UserRegistrationRequestSerializer(registrations,many=True).data
+        return Response(serialized_Data)
 class RegisterBookingView(APIView):
     DAILY_RATES = {
         'STANDARD': 100,
@@ -71,7 +107,7 @@ class RegisterBookingView(APIView):
     def post(self, request):
         email = request.data.get('email')
         user = User.objects.get(email=email)
-
+        room = Room.objects.get(id=request.data.get("room_id"))
         room_id = request.data.get('room_id')
         try:
             selected_room = Room.objects.get(id=room_id)
@@ -97,7 +133,8 @@ class RegisterBookingView(APIView):
                 start_date=start,
                 end_date=end,
                 user=user,
-                status = "PENDING"
+                status = "PENDING",
+                cost = self.get_cost(total_days=total_days,room_type=room.type)
             )
 
         return Response({
@@ -112,8 +149,9 @@ class RegisterBookingView(APIView):
         
         
 class CheckBooking(APIView):
-    def put(self,request,booking_id,profile_id):
-        profile = Profile.objects.get(id=profile_id)
+    def put(self,request,booking_id,user_id):
+        user = User.objects.get(id=user_id)
+        profile = Profile.objects.get(user=user)
         if profile.role != "RECEPTIONIST":
             return Response({"Unauthorized"},status=status.HTTP_401_UNAUTHORIZED)
         
@@ -130,8 +168,10 @@ class CheckBooking(APIView):
             "message":"Booking saved",
         },status=status.HTTP_200_OK)
         
-    def delete(self,request,booking_id,profile_id):
-        profile = Profile.objects.get(id=profile_id)
+    def delete(self,request,booking_id,user_id):
+        user = User.objects.get(id=user_id)
+        profile = Profile.objects.get(user=user)
+        profile = Profile.objects.get(user=user)
         if profile.role != "RECEPTIONIST":
             return Response({"Unauthorized"},status=status.HTTP_401_UNAUTHORIZED)
         #send email to the user
@@ -146,8 +186,9 @@ class CheckBooking(APIView):
 
 
 @api_view(['GET'])
-def query_bookings(request,profile_id):        
-        profile = Profile.objects.get(id=profile_id)
+def query_bookings(request,user_id):        
+        user = User.objects.get(id=user_id)
+        profile = Profile.objects.get(user=user)
         if profile.role != "RECEPTIONIST":
             return Response({"Unauthorized"},status=status.HTTP_401_UNAUTHORIZED)
         

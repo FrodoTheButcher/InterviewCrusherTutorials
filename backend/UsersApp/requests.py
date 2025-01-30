@@ -6,7 +6,6 @@ class CreateUserRequest(serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     password = serializers.CharField()
-    username = serializers.CharField()
     image = serializers.ImageField()
     role = serializers.ChoiceField(choices = Profile.ROLE_CHOICES)
     
