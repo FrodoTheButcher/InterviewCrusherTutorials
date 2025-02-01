@@ -12,6 +12,9 @@ class Room(models.Model):
     floor = models.IntegerField()
     type = models.CharField(max_length=50, choices=ROOM_TYPE_CHOICES) 
     available = models.BooleanField(default=False)
+    rating = models.IntegerField(default=5)
 
+    name = models.CharField(max_length=500,default="nope")
+    description = models.TextField(default="nope")
     def __str__(self):
         return self.type

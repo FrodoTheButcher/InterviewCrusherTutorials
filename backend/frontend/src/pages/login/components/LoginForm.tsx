@@ -105,6 +105,7 @@ const LoginForm = () => {
                     variant="contained"
                     color="primary"
                     sx={{ mt: 3, mb: 2 }}
+                    onClick={()=>{navigate("/register")}}
                 >
                     Sign In
                 </Button>

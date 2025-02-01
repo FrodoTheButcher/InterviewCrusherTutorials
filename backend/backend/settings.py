@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "RoomApp.apps.RoomappConfig",
     "UsersApp.apps.UsersappConfig",
+    "TasksApp.apps.TasksappConfig",
 ]
 
 MIDDLEWARE = [

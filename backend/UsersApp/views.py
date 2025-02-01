@@ -55,12 +55,21 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 class UpdateRegistrationRequest(APIView):
-    def delete(self,request,pk):
+    def delete(self,request,pk,user_requesting_pk):
+        user_requesting = User.objects.get(id=user_requesting_pk)
+        profile = Profile.objects.get(user=user_requesting)
+        if profile.role != "MANAGER":
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         document = UserRegistrationRequest.objects.get(id=pk)
         document.delete()
         send_mail("Your registration was declined","Your registration was declined. You can contact us on ... for details",settings.EMAIL_HOST_USER,[request.data.get('email')],fail_silently=False)
-        return Response(status=status.HTTP_200_OK)
-    def post(self,request,pk):
+        return Response({"message":'Request deleted successfully'},status=status.HTTP_200_OK)
+    def post(self,request,pk, user_requesting_pk):
+      try:
+        user_requesting = User.objects.get(id=user_requesting_pk)
+        profile = Profile.objects.get(user=user_requesting)
+        if profile.role != "MANAGER":
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         user_registration = UserRegistrationRequest.objects.get(id=pk)
         create_user  = User(
             email=user_registration.email,
@@ -77,14 +86,26 @@ class UpdateRegistrationRequest(APIView):
         )
         user_registration.delete()
         send_mail("Your registration was accepted","Your registration was accepted. Login at ...",settings.EMAIL_HOST_USER,[request.data.get('email')],fail_silently=False)
-        return Response(status=status.HTTP_200_OK)
+        return Response({"message":"User registered successfully"},status=status.HTTP_200_OK)
+      except :
+        return Response({"message":"There is already an account with this username"},status=status.HTTP_200_OK)
     
 
 @api_view(['GET'])
 def get_users_registered(request):
     users = User.objects.all()
     serialized = UserSerializer(users,many=True).data 
-    return Response(serialized,status=status.HTTP_200_OK)    
+    return Response(serialized,status=status.HTTP_200_OK)   
+
+@api_view(['DELETE'])
+def delete_user(request,user_id,user_requesting_id): 
+     user_requesting = User.objects.get(id=user_requesting_id)
+     profile = Profile.objects.get(user=user_requesting)
+     if profile.role != "MANAGER":
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+     user = User.objects.get(id=user_id)
+     user.delete()
+     return Response({"User deleted successfully"},status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def get_all_registration_requests(request):

@@ -46,9 +46,3 @@ class Booking(models.Model):
     status = models.CharField(max_length=10, choices=CHOICES, default='PENDING')
 
 
-class Task(models.Model):
-    user = models.ForeignKey(User,blank=False,null=False,on_delete=models.CASCADE)
-    room = models.OneToOneField(Room,blank=False,null=False,on_delete=models.CASCADE)
-    name = models.CharField(max_length=200,blank=False,null=False)
-    description = models.TextField(blank=True,null=True)
-    

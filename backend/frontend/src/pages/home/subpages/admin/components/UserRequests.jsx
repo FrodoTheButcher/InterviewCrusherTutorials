@@ -22,13 +22,17 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 const UserTable = () => {
     const [open, setOpen] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
     const [actionType, setActionType] = useState('');
 
-    const [users,setUsers] = useState([])
+    const [userConnected, setUserConnected] = useState(
+        localStorage.getItem("access") ? jwtDecode(localStorage.getItem("access")) : ""
+      );
+          const [users,setUsers] = useState([])
 
     const fetchRequests = async () => {
         try {
@@ -40,6 +44,7 @@ const UserTable = () => {
     };
 
     useEffect(() => {
+        console.log("userConnected",userConnected)
         fetchRequests();
     }, []);
     const handleClickOpen = (user, action) => {
@@ -49,25 +54,22 @@ const UserTable = () => {
     };
 
     const handleClose = () => {
+        axios.delete(`http://localhost:8000/user_registration/${currentUser.id}/${userConnected.user_id}`)
+        setUsers(prev=>prev?.filter(e=>e?.id!==currentUser?.id))
         setOpen(false);
     };
 
-    const handleConfirm = () => {
-        console.log(`${actionType}d user:`, currentUser.email);
+    const handleConfirm = async () => {
+        axios.post(`http://localhost:8000/user_registration/${currentUser.id}/${userConnected.user_id}`)
+        setUsers(prev=>prev?.filter(e=>e?.id!==currentUser?.id))
         setOpen(false);
     };
-    if(!users?.length)
-    {
-        return <></>
-    }
 
     const actionIcon = actionType === 'approve' ? <CheckCircleOutlineIcon sx={{ color: 'green', mr: 1 }} /> : <HighlightOffIcon sx={{ color: 'red', mr: 1 }} />;
 
     return (
         <React.Fragment>
-            <Typography variant="h4" component="h2" sx={{ textAlign: 'center' }}>
-                User Management Table
-            </Typography>
+           
             <TableContainer component={Paper} sx={{ margin: 'auto',  }}>
                 <Table sx={{ }} aria-label="simple table">
                     <TableHead>

@@ -5,7 +5,6 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
-import logo from "../../assets/logo.webp";
 import RegisterForm from './components/RegisterForm';
 
 export const Register = () => {

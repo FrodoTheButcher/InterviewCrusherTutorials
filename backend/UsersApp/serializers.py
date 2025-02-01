@@ -27,18 +27,21 @@ class BookingSerializer(serializers.ModelSerializer):
             return None  
 
         
+        
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = "__all__"
+        model = Profile
 class UserSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
     class Meta:
-        fields = "__all__"
+        fields = ['email','first_name','last_name','id','profile']
         model = User 
         
     def get_profile(self,obj):
         try:
             profile = Profile.objects.get(user=obj)
-            return {
-                "role":profile.role,
-                "id":profile.id
-            }
+            
+            return ProfileSerializer(profile,many=False).data
         except:
             return None

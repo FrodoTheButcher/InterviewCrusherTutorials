@@ -6,6 +6,8 @@ import User from './subpages/user'
 import Manager from './subpages/admin'
 import Receptionist from './subpages/receptionist'
 import { useNavigate } from 'react-router'
+import HousekeeperView from './subpages/housekeeper'
+import AvailableRooms from './subpages/user'
 
 const Home = () => {
 
@@ -24,27 +26,28 @@ const Home = () => {
         })
     },[])
 
-  if(user?.role === USER_ROLES.USER)
-  {
-    return (
-        <User/>
-    )
-  }
-  else if(user?.role === USER_ROLES.MANAGER)
+   if(user?.role === USER_ROLES.MANAGER)
   {
     return (
         <Manager/>
     )
   }
   else if(user?.role === USER_ROLES.RECEPTIONIST)
-    {
-      return (
-          <Receptionist/>
-      )
-    }
-else{
-    return <>nope</>
-}
+  {
+    return (
+      <Receptionist/>
+    )
+  }
+  else if(user?.role === USER_ROLES.HOUSEKEEPER)
+  {
+    return (
+      <HousekeeperView/>
+    )
+  }
+  else return (
+    <AvailableRooms/>
+  )
+
 }
 
 export default Home
