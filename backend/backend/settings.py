@@ -96,11 +96,10 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+import dj_database_url
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    'default': dj_database_url.parse('postgresql://hotelconnect_user:viNT2EtcuUYQm5AiBdumHCJLDo9mB2U0@dpg-cufio35svqrc73fr00hg-a.oregon-postgres.render.com/hotelconnect')
 }
 
 
